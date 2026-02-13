@@ -30,7 +30,7 @@ const ChatBot: React.FC<ChatBotProps> = ({ user, isOpen, setIsOpen }) => {
             <div className="p-4 border-b border-gray-50 flex justify-between items-center bg-white flex-shrink-0">
               <div className="flex items-center gap-2 px-2">
                 <div className="text-[#17A2B8]"><Icons.Shield /></div>
-                <span className="text-xs font-black text-[#0F2A3D] uppercase tracking-tighter">ASTU Safety Hub</span>
+                <span className="text-xs font-black text-[#0F2A3D] uppercase tracking-tighter">ዘብ AI Hub</span>
               </div>
               <button
                 onClick={() => setIsOpen(false)}
