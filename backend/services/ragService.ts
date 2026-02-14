@@ -5,8 +5,8 @@ import { truncateText } from '../utils/textProcessing';
 
 // Constants
 const VOYAGE_MODEL = 'voyage-3-large';
-// Use a valid Gemini model
-const GEMINI_MODEL = 'gemini-1.5-flash'; 
+// Use Gemini 2.5 Flash as required
+const GEMINI_MODEL = 'gemini-2.5-flash';
 
 interface VoyageEmbeddingResponse {
     data: Array<{
@@ -107,38 +107,32 @@ export class RAGService {
         try {
             const model = this.genAI.getGenerativeModel({ model: GEMINI_MODEL });
 
-            // Prepare context text
-            let contextText = '';
-            if (context.length > 0) {
-                contextText = context.map((doc, index) => {
+            // Prepare context text (concise snippets to keep prompt size reasonable)
+            const contextText = context && context.length > 0
+                ? context.map((doc, index) => {
                     const info = doc.similarity ? ` (Relevance: ${(doc.similarity * 100).toFixed(1)}%)` : '';
                     return `Document ${index + 1}: ${doc.title}${info}\nContent: ${truncateText(doc.content, 1000)}`;
-                }).join('\n\n');
-            } else {
-                contextText = "No specific documents found in the database.";
-            }
+                }).join('\n\n')
+                : 'No specific documents found in the database.';
 
-            const prompt = `You are "ዘብ AI" (Zeb AI), the smart campus safety assistant for ASTU (Addis Science and Technology University).
-Your role is to assist students and staff with safety information, emergency procedures, and campus resources.
+            // Construct a clear prompt that instructs the model to use the provided context first
+            const prompt = [
+                `System: You are \"ዘብ AI\" (Zeb AI), the smart campus safety assistant for ASTU. Answer concisely and professionally.`,
+                `Instructions: Use the CONTEXT DOCUMENTS to answer the USER QUESTION. If you must use general knowledge, clearly state it's general advice. If this is an active emergency, give emergency contacts and safety guidance. Do NOT fabricate ASTU-specific facts. Cite document titles when possible.`,
+                `CONTEXT DOCUMENTS:\n${contextText}`,
+                `USER QUESTION:\n${question}`
+            ].join('\n\n');
 
-INSTRUCTIONS:
-1. Answer the user's question based PRIMARILY on the provided context documents.
-2. If the context contains the answer, use it and cite the document title if possible.
-3. If the context is empty or irrelevant, you may use your general knowledge but MUST clarify that this is general advice, not specific tailored ASTU policy.
-4. If the question implies an ACTIVE EMERGENCY, immediately provide emergency contact numbers (Campus Security, Ambulance) and advice to seek safety.
-5. Keep your response concise, professional, and supportive.
-6. Do not make up facts about ASTU.
-
-CONTEXT DOCUMENTS:
-${contextText}
-
-USER QUESTION:
-${question}
-`;
-
+            // Call the model and return the generated text
             const result = await model.generateContent(prompt);
             const response = await result.response;
-            return response.text();
+            const text = await response.text();
+
+            if (!text || text.trim().length === 0) {
+                throw new Error('Model returned an empty response');
+            }
+
+            return text.trim();
         } catch (error) {
             console.error('❌ Error generating AI response:', error);
             throw new Error('Failed to generate response from AI service.');
