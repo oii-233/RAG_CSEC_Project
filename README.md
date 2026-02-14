@@ -161,5 +161,13 @@ Frontend will usually run at `http://localhost:5173` (Vite default) and the back
 
 <img width="1722" height="1302" alt="image" src="https://github.com/user-attachments/assets/fac6d10e-161a-4ab3-8df5-2d504949db20" />
 
+### chatbot image
+
+<img width="1272" height="851" alt="image" src="https://github.com/user-attachments/assets/a5115bc7-dca6-4993-a4d2-760026a20260" />
+
+### student dashboard
+
+<img width="1892" height="858" alt="image" src="https://github.com/user-attachments/assets/58a28a9e-efae-4694-b61d-be7476fe4cec" />
+
 
 
