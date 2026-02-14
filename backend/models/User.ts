@@ -11,6 +11,7 @@ export interface IUser extends Document {
     universityId: string;
     password: string;
     role: 'student' | 'admin' | 'staff';
+    bio?: string;
     isActive: boolean;
     createdAt: Date;
     updatedAt: Date;
@@ -60,6 +61,11 @@ const userSchema = new Schema<IUser>(
             type: String,
             enum: ['student', 'admin', 'staff'],
             default: 'student'
+        },
+        bio: {
+            type: String,
+            default: '',
+            maxlength: [500, 'Bio cannot be more than 500 characters']
         },
         isActive: {
             type: Boolean,

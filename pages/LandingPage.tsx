@@ -17,11 +17,15 @@ const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
       <nav className="flex justify-between items-center px-12 py-6 bg-white shadow-sm sticky top-0 z-50">
         <div className="flex items-center gap-3">
           <div className="bg-white p-1 rounded-lg">
-            <Icons.ASTULogo />
+            <Icons.ASTULogo className="w-16 h-16 rounded-lg object-cover" />
           </div>
-          <span className="font-bold text-xl text-[#0F2A3D]">ዘብ AI</span>
+          <div className="flex items-baseline font-serif font-extrabold tracking-tight">
+            <span className="text-5xl text-[#17A2B8]">ዘ</span>
+            <span className="text-4xl text-[#17A2B8]">ብ</span>
+            <span className="text-4xl text-[#0F2A3D] ml-2">AI</span>
+          </div>
         </div>
-        <div className="hidden md:flex items-center gap-8 font-medium text-gray-600">
+        <div className="hidden md:flex items-center gap-8 font-medium font-bold text-[#0F2A3D]">
           <a href="#" className="hover:text-[#17A2B8] transition-colors">Home</a>
           <button onClick={scrollToHowItWorks} className="hover:text-[#17A2B8] transition-colors">How It Works</button>
           <a href="mailto:security@astu.edu.et" className="hover:text-[#17A2B8] transition-colors">Contact</a>
@@ -51,13 +55,11 @@ const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
         <div className="relative z-10 max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-16">
           <div className="flex-1 space-y-8 text-center md:text-left">
             <h1 className="text-5xl md:text-6xl font-extrabold text-[#0F2A3D] leading-tight">
-              Your Safety. <br />
-              <span className="text-white">Your Campus.</span> <br />
-              Your Voice.
+              Your Safety <br />
+              <span className="text-white">Your Campus</span> <br />
+              Your Voice
             </h1>
-            <p className="text-xl text-gray-800 max-w-lg">
-              Report incidents, access verified campus information, and stay informed at Adama Science and Technology University.
-            </p>
+
             <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
               <button
                 onClick={onGetStarted}
@@ -73,17 +75,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
               </button>
             </div>
           </div>
-          <div className="flex-1 hidden md:flex justify-center">
-            <div className="relative w-96 h-96">
-              <div className="absolute inset-0 bg-white/10 rounded-full animate-pulse"></div>
-              <div className="absolute inset-10 bg-white/20 rounded-full"></div>
-              <div className="absolute inset-20 bg-white/30 rounded-full flex items-center justify-center">
-                <div className="text-white transform scale-[3]">
-                  <Icons.Shield />
-                </div>
-              </div>
-            </div>
-          </div>
+
         </div>
       </section>
 
@@ -102,8 +94,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
                 icon: Icons.User
               },
               {
-                title: "Report or Ask",
-                desc: "Submit detailed incident reports or ask our AI assistant for policy information.",
+                title: "Ask",
+                desc: "Ask our AI assistant for policy information.",
                 icon: Icons.Shield
               },
               {
@@ -130,7 +122,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
           <div className="space-y-4">
             <div className="flex items-center gap-3">
               <Icons.Shield />
-              <span className="font-bold text-xl">ዘብ AI</span>
+              <span className="font-bold text-2xl font-serif">ዘብ AI</span>
             </div>
             <p className="text-gray-400 text-sm">
               Securing the future of Adama Science and Technology University through digital innovation.
@@ -139,9 +131,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
           <div className="space-y-4">
             <h4 className="font-bold">Contact Points</h4>
             <ul className="text-gray-400 text-sm space-y-2">
-              <li>Security Office: Block A, G01</li>
-              <li>Maintenance: Block D</li>
-              <li>Emergency: +251 XXX XXXX</li>
+              <li>Security Office: Block 301, G01</li>
+              <li>Maintenance: Block 302</li>
+              <li>Emergency: +251 924 62 14 07</li>
             </ul>
           </div>
           <div className="space-y-4">
@@ -154,7 +146,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
           <div className="space-y-4">
             <h4 className="font-bold">Institutional</h4>
             <ul className="text-gray-400 text-sm space-y-2">
-              <li><a href="https://astu.edu.et" target="_blank" className="hover:text-white">University Website</a></li>
+              <li><a href="https://www.astu.edu.et" target="_blank" className="hover:text-white"> ASTU Website</a></li>
             </ul>
           </div>
         </div>
