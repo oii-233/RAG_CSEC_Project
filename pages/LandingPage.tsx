@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Icons, COLORS } from '../constants';
 
 interface LandingPageProps {
@@ -14,7 +14,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Navigation */}
-      <nav className="flex justify-between items-center px-12 py-6 bg-white shadow-sm sticky top-0 z-50">
+      <nav className="flex justify-between items-center px-6 md:px-12 py-4 bg-white shadow-sm sticky top-0 z-50">
         <div className="flex items-center gap-3">
           <div className="bg-white p-1 rounded-lg">
             <Icons.ASTULogo className="w-16 h-16 rounded-lg object-cover" />
@@ -36,6 +36,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
             Login
           </button>
         </div>
+
+        {/* Mobile menu */}
+        <MobileNav scrollToHowItWorks={scrollToHowItWorks} onGetStarted={onGetStarted} />
       </nav>
 
       {/* Hero Section */}
@@ -156,3 +159,40 @@ const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
 };
 
 export default LandingPage;
+
+const MobileNav: React.FC<{ scrollToHowItWorks: () => void; onGetStarted: () => void }> = ({ scrollToHowItWorks, onGetStarted }) => {
+  const [open, setOpen] = useState(false);
+
+  const handleNavigate = (fn?: () => void) => {
+    if (fn) fn();
+    setOpen(false);
+  };
+
+  return (
+    <div className="md:hidden relative">
+      <button
+        aria-label="Toggle menu"
+        onClick={() => setOpen(!open)}
+        className="inline-flex items-center justify-center p-2 rounded-md text-[#0F2A3D] hover:bg-gray-100"
+      >
+        <span className="sr-only">Open main menu</span>
+        <div className="w-6 h-6 flex flex-col justify-between">
+          <span className="block h-0.5 bg-current" />
+          <span className="block h-0.5 bg-current" />
+          <span className="block h-0.5 bg-current" />
+        </div>
+      </button>
+
+      {open && (
+        <div className="absolute right-4 top-14 w-56 bg-white rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 py-3">
+          <a href="#" onClick={() => handleNavigate()} className="block px-4 py-2 text-[#0F2A3D] hover:bg-gray-50">Home</a>
+          <button onClick={() => handleNavigate(scrollToHowItWorks)} className="w-full text-left px-4 py-2 text-[#0F2A3D] hover:bg-gray-50">How It Works</button>
+          <a href="mailto:security@astu.edu.et" onClick={() => handleNavigate()} className="block px-4 py-2 text-[#0F2A3D] hover:bg-gray-50">Contact</a>
+          <div className="px-4 pt-2">
+            <button onClick={() => handleNavigate(onGetStarted)} className="w-full bg-[#17A2B8] text-white px-4 py-2 rounded-md">Login</button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};

@@ -12,7 +12,9 @@ const ChatPage: React.FC<ChatPageProps> = ({ user }) => {
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [input, setInput] = useState('');
     const [isTyping, setIsTyping] = useState(false);
-    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(true); // desktop collapse state
+    const [isMobile, setIsMobile] = useState(false);
+    const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
     const [conversations, setConversations] = useState<Conversation[]>([]);
     const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
     const [isLoadingHistory, setIsLoadingHistory] = useState(false);
@@ -20,6 +22,20 @@ const ChatPage: React.FC<ChatPageProps> = ({ user }) => {
 
     useEffect(() => {
         loadHistory();
+    }, []);
+
+    // Detect mobile for responsive behavior
+    useEffect(() => {
+        const onResize = () => {
+            const m = window.innerWidth < 768;
+            setIsMobile(m);
+            if (!m) {
+                setIsMobileSidebarOpen(false);
+            }
+        };
+        onResize();
+        window.addEventListener('resize', onResize);
+        return () => window.removeEventListener('resize', onResize);
     }, []);
 
     useEffect(() => {
@@ -106,9 +122,9 @@ const ChatPage: React.FC<ChatPageProps> = ({ user }) => {
     };
 
     return (
-        <div className="flex h-full bg-white overflow-hidden rounded-[24px] shadow-sm border border-gray-100">
-            {/* Internal Chat Sidebar */}
-            <div className={`${isSidebarOpen ? 'w-72' : 'w-0'} transition-all duration-300 bg-gray-50 border-r border-gray-100 flex flex-col overflow-hidden`}>
+        <div className="flex h-full bg-white overflow-hidden rounded-[24px] shadow-sm border border-gray-100 relative">
+            {/* Desktop Sidebar (hidden on mobile) */}
+            <div className={`hidden md:flex ${isSidebarOpen ? 'w-72' : 'w-0'} transition-all duration-300 bg-gray-50 border-r border-gray-100 flex-col overflow-hidden`}>
                 <div className="p-4">
                     <button
                         onClick={startNewChat}
@@ -165,22 +181,79 @@ const ChatPage: React.FC<ChatPageProps> = ({ user }) => {
                 </div>
             </div>
 
+            {/* Mobile sidebar overlay */}
+            {isMobile && isMobileSidebarOpen && (
+                <div className="fixed inset-0 z-40 flex">
+                    <div className="absolute inset-0 bg-black/40" onClick={() => setIsMobileSidebarOpen(false)} />
+                    <div className="relative w-72 bg-gray-50 border-r border-gray-100 flex flex-col overflow-auto">
+                        <div className="p-4">
+                            <button
+                                onClick={() => { setIsMobileSidebarOpen(false); setMessages([]); }}
+                                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm font-bold text-[#0F2A3D] hover:bg-gray-50 transition-all shadow-sm active:scale-95"
+                            >
+                                <Icons.Plus />
+                                <span>New Chat</span>
+                            </button>
+                        </div>
+                        <div className="flex-1 overflow-y-auto px-4 py-2 space-y-2">
+                            <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2 mb-2">Recent</div>
+                            {conversations.map(item => (
+                                <button
+                                    key={item._id}
+                                    onClick={() => { setIsMobileSidebarOpen(false); switchConversation(item._id); }}
+                                    className={`w-full text-left px-4 py-3 rounded-xl transition-all group relative border ${activeConversationId === item._id
+                                        ? 'bg-white border-gray-200 shadow-sm'
+                                        : 'hover:bg-white border-transparent hover:border-gray-100'
+                                        }`}
+                                >
+                                    <div className="text-sm font-bold text-[#0F2A3D] truncate pr-8 tracking-tight">{item.title}</div>
+                                    <div className="text-[10px] text-gray-400 font-bold uppercase tracking-tighter mt-0.5">
+                                        {new Date(item.updatedAt).toLocaleDateString()}
+                                    </div>
+                                </button>
+                            ))}
+                        </div>
+                        <div className="p-4 border-t border-gray-200">
+                            <div className="flex items-center gap-3 px-2">
+                                <div className="w-8 h-8 bg-[#17A2B8] rounded-lg flex items-center justify-center text-white text-xs font-black uppercase">
+                                    {user.name.charAt(0)}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <div className="text-xs font-black text-[#0F2A3D] truncate">{user.name}</div>
+                                    <div className="text-[9px] text-gray-400 font-bold tracking-tighter uppercase">{user.role} Access</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Main Chat Content */}
             <div className="flex-1 flex flex-col bg-white relative">
-                {/* Mobile Sidebar Toggle (Hidden on desktop) */}
-                {!isSidebarOpen && (
+                {/* Mobile open button */}
+                {isMobile && (
                     <button
-                        onClick={() => setIsSidebarOpen(true)}
-                        className="absolute left-4 top-4 z-20 p-2 bg-white rounded-lg border border-gray-100 shadow-sm text-gray-400 hover:text-[#17A2B8]"
+                        onClick={() => setIsMobileSidebarOpen(true)}
+                        className="md:hidden absolute left-4 top-4 z-20 p-2 bg-white rounded-lg border border-gray-100 shadow-sm text-gray-400 hover:text-[#17A2B8]"
                     >
                         <Icons.Layout />
                     </button>
                 )}
 
-                {isSidebarOpen && (
+                {/* Desktop collapse/expand */}
+                {!isMobile && !isSidebarOpen && (
+                    <button
+                        onClick={() => setIsSidebarOpen(true)}
+                        className="hidden md:inline absolute left-4 top-4 z-20 p-2 bg-white rounded-lg border border-gray-100 shadow-sm text-gray-400 hover:text-[#17A2B8]"
+                    >
+                        <Icons.Layout />
+                    </button>
+                )}
+
+                {!isMobile && isSidebarOpen && (
                     <button
                         onClick={() => setIsSidebarOpen(false)}
-                        className="absolute left-4 top-4 z-20 p-2 text-gray-400 hover:text-[#17A2B8] transition-colors"
+                        className="hidden md:inline absolute left-4 top-4 z-20 p-2 text-gray-400 hover:text-[#17A2B8] transition-colors"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13l-6-6-6 6" /></svg>
                     </button>
@@ -195,7 +268,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ user }) => {
                 </div>
 
                 {/* Message Container */}
-                <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-8">
+                <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-6">
                     <div className="max-w-3xl mx-auto space-y-8">
                         {messages.length === 0 && (
                             <div className="flex flex-col items-center justify-center py-20 text-center space-y-6">
@@ -213,7 +286,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ user }) => {
 
                         {messages.map((msg, i) => (
                             <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-2 duration-300`}>
-                                <div className={`flex gap-4 max-w-[85%] ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
+                                <div className={`flex gap-4 max-w-[85%] sm:max-w-[75%] md:max-w-[70%] lg:max-w-[60%] ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
                                     <div className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center ${msg.role === 'user' ? 'bg-[#0F2A3D] text-white' : 'bg-[#17A2B8] text-white'
                                         }`}>
                                         {msg.role === 'user' ? <Icons.Layout /> : <Icons.Shield />}

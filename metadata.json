@@ -1,6 +1,6 @@
 
 {
-  "name": "ASTU Smart Campus Safety & Incident Platform",
+  "name": "ዘብ AI",
   "description": "An AI-powered institutional safety platform for Adama Science and Technology University, featuring conversational incident reporting and RAG-based policy assistance.",
   "requestFramePermissions": [
     "camera"
